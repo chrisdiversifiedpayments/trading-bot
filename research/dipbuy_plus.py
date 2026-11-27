@@ -19,7 +19,7 @@ from universes import LARGE_2021  # noqa: E402
 ap = argparse.ArgumentParser()
 ap.add_argument("start", nargs="?", default="2021-06-01")
 ap.add_argument("end", nargs="?", default="2026-11-26")
-a = ap.parse_args()
+a, _ = ap.parse_known_args()
 START, END = date.fromisoformat(a.start), date.fromisoformat(a.end)
 
 W = json.load(open("data_cache/daily_wide_ohlc.json"))
@@ -51,6 +51,7 @@ def rsi2(s, i):
 def simulate(limit_offset, park_spy, slots=5, weight=0.2, exit_bps=5, spy_bps=5):
     cash, spy, pos, held = 10_000.0, 0.0, {}, {}
     sells, orders, curve, fills, missed = [], [], [], 0, 0
+    curve_dates = []
     last_close = {}
 
     def spy_px(d, k):
@@ -74,7 +75,7 @@ def simulate(limit_offset, park_spy, slots=5, weight=0.2, exit_bps=5, spy_bps=5)
                 continue
             o, h, l, c = px[s][d]
             if limit_offset is None:
-                fill, cost = o, 5
+                fill, cost = o, exit_bps  # market order: same cost as exits
             else:
                 lim = ref_close * (1 - limit_offset)
                 if l > lim:
@@ -104,6 +105,7 @@ def simulate(limit_offset, park_spy, slots=5, weight=0.2, exit_bps=5, spy_bps=5)
                 last_close[s] = px[s][d][C]
         value = cash + spy * spy_px(d, C) + sum(q * last_close[s] for s, q in pos.items())
         curve.append(value)
+        curve_dates.append(d)
         # signals at the close for tomorrow
         sells = [s for s in pos if (sma(s, i, 5) and px[s][d][C] > sma(s, i, 5)) or held[s] >= 10]
         free = slots - (len(pos) - len(sells))
@@ -120,6 +122,7 @@ def simulate(limit_offset, park_spy, slots=5, weight=0.2, exit_bps=5, spy_bps=5)
     for v in curve:
         peak = max(peak, v)
         dd = max(dd, 1 - v / peak)
+    simulate.last_curve = dict(zip(curve_dates, curve))
     return 100 * ((curve[-1] / 10_000) ** (1 / years) - 1), 100 * dd, fills, missed
 
 
@@ -134,10 +137,13 @@ def spy_hold():
     return 100 * ((c[-1] / px["SPY"][ds[0]][O]) ** (1 / years) - 1), 100 * dd
 
 
-r, dd = spy_hold()
-print(f"{'Hold SPY':<40} yearly {r:5.1f}%  worst drop {dd:5.1f}%")
-for name, off in (("market entry", None), ("limit at close", 0.0), ("limit 0.5% below", 0.005), ("limit 1% below", 0.01)):
-    for park in (False, True):
-        r, dd, f, m = simulate(off, park)
-        label = f"{name}{' + idle cash in SPY' if park else ''}"
-        print(f"{label:<40} yearly {r:5.1f}%  worst drop {dd:5.1f}%  fills {f}  unfilled {m}")
+
+if __name__ == "__main__":
+    r, dd = spy_hold()
+    print(f"{'Hold SPY':<40} yearly {r:5.1f}%  worst drop {dd:5.1f}%")
+    for name, off in (("market entry", None), ("limit at close", 0.0), ("limit 0.5% below", 0.005), ("limit 1% below", 0.01)):
+        for park in (False, True):
+            r, dd, f, m = simulate(off, park)
+            label = f"{name}{' + idle cash in SPY' if park else ''}"
+            print(f"{label:<40} yearly {r:5.1f}%  worst drop {dd:5.1f}%  fills {f}  unfilled {m}")
+    

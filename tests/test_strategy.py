@@ -6,7 +6,8 @@ from tests.helpers import day_bars
 
 # Fixed settings so tests don't change when config.yaml is tuned
 S = replace(load_settings("config.yaml"), range_minutes=15, volume_mult=1.5, reward_risk=2.0,
-            market_filter=False, max_trades_per_day=10)
+            market_filter=False, max_trades_per_day=10, risk_per_trade_pct=0.5, max_position_pct=10,
+            max_open_positions=3, daily_loss_cap_pct=2, weekly_loss_cap_pct=5)
 RANGE = [100.0, 100.5, 99.5, 100.2] * 4  # 16 bars: range high 100.55, low 99.45, mid 100.0
 
 

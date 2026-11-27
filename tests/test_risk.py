@@ -4,7 +4,8 @@ from bot.risk import fits_exposure, may_open_trade, position_size
 
 # Fixed settings so tests don't change when config.yaml is tuned
 S = replace(load_settings("config.yaml"), range_minutes=15, volume_mult=1.5, reward_risk=2.0,
-            market_filter=False, max_trades_per_day=10)
+            market_filter=False, max_trades_per_day=10, risk_per_trade_pct=0.5, max_position_pct=10,
+            max_open_positions=3, daily_loss_cap_pct=2, weekly_loss_cap_pct=5)
 
 
 def test_size_capped_by_risk():

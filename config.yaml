@@ -4,12 +4,13 @@ enabled: true          # kill switch: set to false and the bot closes everything
 allow_short: true      # owner chose to allow short selling
 use_margin: false      # never borrow extra money: total positions <= account value
 
-# Risk limits (percent of account value)
-risk_per_trade_pct: 0.5
-max_position_pct: 10
-max_open_positions: 3
-daily_loss_cap_pct: 2
-weekly_loss_cap_pct: 5
+# Risk limits (percent of account value). Risk level 75 on a 1-100 scale, set by the owner 2026-11-26.
+# Still paper only and no borrowing; 100 would add margin, which is not allowed here.
+risk_per_trade_pct: 1.5       # risk level 75/100 (owner, 2026-11-26); was 0.5
+max_position_pct: 25          # was 10
+max_open_positions: 5          # was 3
+daily_loss_cap_pct: 4          # was 2
+weekly_loss_cap_pct: 8         # was 5
 max_trades_per_day: 3      # tuned 2026-11-27 (was 10)
 flatten_minutes_before_close: 10
 

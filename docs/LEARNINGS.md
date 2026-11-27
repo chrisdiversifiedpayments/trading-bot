@@ -43,6 +43,27 @@ no effect, but only 7 months of Alpaca news existed to test it.
 | Grid, day-only, index funds (Y1 / Y2) | -3.0% / -1.7% | 4.8% |
 | Grid, multi-day, index funds (Y1 / Y2) | +9.0% / +2.1% vs hold +11.7% / +6.6% | 25.0% |
 
+## Combined setups (`research/combo_test.py`), core = 50% SPY + 50% VYM, monthly rebalance
+| Mix | Jun 2021-Nov 2026 (cautious / low) | Nov 2024-Nov 2026 (cautious / low) | Worst drop |
+| --- | --- | --- | --- |
+| SPY only | 11.7% | 10.5% | 24.5% / 18.7% |
+| Core funds only | 11.3% | 11.0% | 19.6% / 16.5% |
+| 80% core + 20% dip-buy | 10.4% / 11.3% | 9.0% / 10.0% | ~17% |
+| 80% core + 10% dip + 10% day bot | n/a | 9.8% / 10.5% | 13.4% |
+| 25% core + 75% dip-buy | 7.6% / 10.8% | 3.2% / 6.4% | ~17% |
+| 25% core + 37.5% dip + 37.5% day bot | n/a | 3.2% / 5.8% | 9.4% |
+Adding bots lowers the worst drop a little but also lowers return. More bot money = less return.
+
+## Risk level 75/100 (owner, 2026-11-26)
+Config now: 1.5% risk/trade, 25% max position, 5 positions, 4% daily / 8% weekly cap, still no
+borrowing, paper only. Day bot Y2: -4.0% cautious / +3.5% low, worst drop 9.6% (was -1.1% / +1.5%, 3.1%).
+Y1: -6.3% / +0.7%. Higher risk magnifies swings, it does not add edge.
+
+## Options (checked 2026-11-26)
+Alpaca supports options trading on paper via API. Option-income funds as a proxy for selling options,
+Jun 2021-Nov 2026: JEPI 7.6%/yr (worst drop 13.7%), XYLD 6.9%, QYLD 6.8% vs SPY 11.7%.
+Buying options for day trading fights time decay and wide spreads; not tested yet.
+
 ## Signals researched (not all tested yet)
 - Political headlines: Alpaca news (free, history from ~Apr 2026 only on this account). Use as a pause rule.
 - Crowd mood: ApeWisdom / Reddit API (free, little history) -> record during paper trading.
