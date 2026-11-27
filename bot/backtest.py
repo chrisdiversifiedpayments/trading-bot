@@ -75,6 +75,7 @@ def run(s: Settings, bars_by_symbol: dict[str, list[Bar]], start_equity: float =
         positions: dict[str, Position] = {}
         traded_today: set[str] = set()
         seen: dict[str, list[Bar]] = defaultdict(list)
+        vol_sum: dict[str, float] = defaultdict(float)
         stopped = False
         last_px: dict[str, float] = {}
         timeline = sorted({b.t for bars in day_bars.values() for b in bars})
@@ -121,6 +122,8 @@ def run(s: Settings, bars_by_symbol: dict[str, list[Bar]], start_equity: float =
             for sym in index:
                 if t in index[sym]:
                     b = index[sym][t]
+                    if seen[sym]:
+                        vol_sum[sym] += seen[sym][-1].v
                     seen[sym].append(b)
                     last_px[sym] = b.c
 
@@ -144,7 +147,7 @@ def run(s: Settings, bars_by_symbol: dict[str, list[Bar]], start_equity: float =
                 if not risk.may_open_trade(s, day_pnl_pct=day_pnl_pct, week_pnl_pct=week_pnl_pct,
                                            open_positions=len(positions), trades_today=len(traded_today)):
                     break
-                sig = strategy.check(s, seen[sym])
+                sig = strategy.check(s, seen[sym], vol_sum[sym])
                 if sig is None:
                     continue
                 qty = position_size_for(s, mark(), sig)

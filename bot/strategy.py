@@ -7,7 +7,6 @@
 """
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta
-from statistics import mean
 from typing import Optional
 
 from bot.config import Settings
@@ -15,7 +14,7 @@ from bot.config import Settings
 MARKET_OPEN = time(9, 30)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class Bar:
     t: datetime  # bar start, US/Eastern
     o: float
@@ -37,18 +36,22 @@ def range_end(s: Settings) -> time:
     return (datetime.combine(datetime.min, MARKET_OPEN) + timedelta(minutes=s.range_minutes)).time()
 
 
-def check(s: Settings, bars: list[Bar]) -> Optional[Signal]:
-    """bars = today's regular-session 1-minute bars so far, oldest first. Looks only at the latest bar."""
+def check(s: Settings, bars: list[Bar], prior_volume_sum: Optional[float] = None) -> Optional[Signal]:
+    """bars = today's regular-session 1-minute bars so far, oldest first. Looks only at the latest bar.
+
+    prior_volume_sum (optional) = total volume of bars[:-1], passed in by the backtester for speed."""
     if len(bars) < 2:
         return None
     end = range_end(s)
-    opening = [b for b in bars if MARKET_OPEN <= b.t.time() < end]
     last = bars[-1]
-    if len(opening) < s.range_minutes * 0.6:  # too many missing bars to trust the range
-        return None
     if not (end <= last.t.time() < s.last_entry):
         return None
-    avg_vol = mean(b.v for b in bars[:-1])
+    opening = [b for b in bars[: s.range_minutes + 1] if MARKET_OPEN <= b.t.time() < end]
+    if len(opening) < s.range_minutes * 0.6:  # too many missing bars to trust the range
+        return None
+    if prior_volume_sum is None:
+        prior_volume_sum = sum(b.v for b in bars[:-1])
+    avg_vol = prior_volume_sum / (len(bars) - 1)
     if avg_vol <= 0 or last.v < s.volume_mult * avg_vol:
         return None
     hi, lo = max(b.h for b in opening), min(b.l for b in opening)
