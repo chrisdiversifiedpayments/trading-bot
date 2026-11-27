@@ -1,11 +1,36 @@
-# Risk limits from the plan (suggested defaults, pending owner review).
+# Settings approved by the owner on 2026-11-26. Change numbers here, not in code.
 mode: paper            # only "paper" is allowed until go-live is approved
-long_only: true
-use_margin: false
-risk_per_trade_pct: 0.5
-max_position_pct: 10
-max_open_positions: 3
-daily_loss_cap_pct: 2
-weekly_loss_cap_pct: 5
-max_trades_per_day: 10
+enabled: true          # kill switch: set to false and the bot closes everything and stops
+allow_short: true      # owner chose to allow short selling
+use_margin: false      # never borrow extra money: total positions <= account value
+
+# Risk limits (percent of account value). Risk level 75 on a 1-100 scale, set by the owner 2026-11-26.
+# Still paper only and no borrowing; 100 would add margin, which is not allowed here.
+risk_per_trade_pct: 1.5       # risk level 75/100 (owner, 2026-11-26); was 0.5
+max_position_pct: 25          # was 10
+max_open_positions: 5          # was 3
+daily_loss_cap_pct: 4          # was 2
+weekly_loss_cap_pct: 8         # was 5
+max_trades_per_day: 3      # tuned 2026-11-27 (was 10)
 flatten_minutes_before_close: 10
+
+# Strategy: opening-range breakout
+range_minutes: 30        # opening range = first 30 minutes after 9:30 ET (tuned, was 15)
+volume_mult: 2.5         # breakout bar volume must be 2.5x the day's average so far (tuned, was 1.5)
+reward_risk: 1.5         # profit target = 1.5x the stop distance (tuned, was 2.0)
+market_filter: true      # only buy when SPY is above its daily average price, only short when below
+# Sit-out filters (tested 2026-11-27): no new trades on these days
+skip_calendar_days: true # Fed decision, CPI inflation and jobs report days (data/calendar.json)
+fear_filter_pct: 5       # skip the day after VIXY closes >5% above its 20-day average (0 = off)
+last_entry_time: "15:00" # no new trades after 3:00 PM ET
+
+# Assumed cost per fill in backtests (basis points; 5 = 0.05%)
+slippage_bps: 5
+
+# Watch list: large, heavily traded stocks and ETFs
+symbols: [SPY, QQQ, IWM, DIA, AAPL, MSFT, NVDA, AMZN, GOOGL, META,
+          TSLA, AMD, AVGO, JPM, BAC, XOM, WMT, COST, NFLX, UNH]
+
+# Headlines with these words in the last 24 hours make the bot skip a stock that day
+news_skip_words: [earnings, guidance, fda, lawsuit, merger, acquisition, acquire,
+                  bankruptcy, offering, investigation, sec charges, downgrade, upgrade]
