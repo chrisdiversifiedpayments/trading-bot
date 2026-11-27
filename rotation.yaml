@@ -1,0 +1,8 @@
+# Weekly "top risers" bot (paper only). Change numbers here, not in code.
+# Tested 2016-2026 (docs/LEARNINGS.md): 16.1%/yr vs SPY 14.7%, worst drop 31.6% vs 33.8%.
+enabled: true        # kill switch for this bot: false = it sells nothing and buys nothing
+top: 5               # how many stocks each batch buys
+look_days: 21        # rank by gain over the last 21 trading days (about 1 month)
+batches: 4           # money split into 4 batches; one batch is redone each week
+budget_pct: 100      # share of the paper account the bot may use (set once, at the first run)
+max_changes_per_month: 1   # the weekly review may change at most one setting a month

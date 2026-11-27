@@ -1,6 +1,6 @@
 # Learnings: read this before any work on the trading bot
 
-Last updated 2026-11-27. Everything below was backtested; numbers are after trading costs unless noted.
+Last updated 2026-11-27. LIVE PAPER BOT: weekly top risers, see the last section. Everything below was backtested; numbers are after trading costs unless noted.
 "Cautious" cost = 0.05% per fill, "low" = 0.02% per fill. Plan doc with full tables:
 https://claude.ai/artifact/BtH4JptKe2Pjh4nGPkkXWn
 
@@ -124,3 +124,15 @@ the 2021 list, so the stock list matters a lot.
 Always-on server for paper trading (owner must sign up, ~$5-10/mo), nightly email report card,
 sector-leaders test, dividend-capture test, proper earnings calendar, insider/sentiment tests.
 Paper trading only; never add live keys or the live Alpaca host without the owner's explicit go-ahead.
+
+## Live paper bot: weekly top risers (started 2026-11-27)
+What runs: `run_rotation.py` / `bot/rotation.py`, settings in `rotation.yaml`. Each week one of 4
+batches (25% of the paper account each) sells its stocks and buys the 5 stocks from the 2021 list that
+rose most over the last 21 trading days, so each pick is held about 4 weeks. Same as the 10-year test
+(16.1%/yr vs SPY 14.7%). Orders: market orders, fractional where allowed, no borrowing.
+Records: `data/journal.csv` (every order, with fill cost in bps), `data/scorecard.csv` (account vs SPY
+each week), `data/rotation_state.json` (what each batch holds). Review rules: `docs/REVIEW_RULES.md`.
+Dry run 2026-11-26 picked CHTR (+40% in 21 days), LOW, CMCSA, TGT, DIS.
+
+| Week | Batch | Picks | Account since start | SPY since start | Avg fill cost (bps) | Notes |
+| --- | --- | --- | --- | --- | --- | --- |

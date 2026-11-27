@@ -7,6 +7,8 @@ Plan: https://claude.ai/artifact/BtH4JptKe2Pjh4nGPkkXWn
 
 **Read [docs/LEARNINGS.md](docs/LEARNINGS.md) first**: every test result so far and what was ruled out.
 
+**What runs now:** the weekly top-risers bot on paper (`python run_rotation.py`, add `--dry-run` to preview). Settings: `rotation.yaml`. Results: `data/scorecard.csv`. Review rules: `docs/REVIEW_RULES.md`.
+
 ## What it does
 Opening-range breakout on 20 large, heavily traded stocks and ETFs (`config.yaml`):
 buys when a stock breaks above its first-15-minute range on heavy volume, short-sells
