@@ -18,6 +18,9 @@ range_minutes: 30        # opening range = first 30 minutes after 9:30 ET (tuned
 volume_mult: 2.5         # breakout bar volume must be 2.5x the day's average so far (tuned, was 1.5)
 reward_risk: 1.5         # profit target = 1.5x the stop distance (tuned, was 2.0)
 market_filter: true      # only buy when SPY is above its daily average price, only short when below
+# Sit-out filters (tested 2026-11-27): no new trades on these days
+skip_calendar_days: true # Fed decision, CPI inflation and jobs report days (data/calendar.json)
+fear_filter_pct: 5       # skip the day after VIXY closes >5% above its 20-day average (0 = off)
 last_entry_time: "15:00" # no new trades after 3:00 PM ET
 
 # Assumed cost per fill in backtests (basis points; 5 = 0.05%)

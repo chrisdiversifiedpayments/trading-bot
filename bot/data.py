@@ -62,3 +62,18 @@ def recent_headlines(symbol: str, hours: int = 24) -> list[str]:
     news = client.get_news(req)
     items = news.data.get("news", []) if hasattr(news, "data") else []
     return [n.headline for n in items]
+
+
+def daily_closes(symbol: str, days: int = 40) -> list[float]:
+    """Completed daily closes (oldest first), excluding today."""
+    from alpaca.data.enums import DataFeed
+    from alpaca.data.historical import StockHistoricalDataClient
+    from alpaca.data.requests import StockBarsRequest
+    from alpaca.data.timeframe import TimeFrame
+
+    key, secret = api_keys()
+    now = datetime.now(ET)
+    req = StockBarsRequest(symbol_or_symbols=symbol, timeframe=TimeFrame.Day,
+                           start=now - timedelta(days=days), end=now, feed=DataFeed.IEX)
+    bars = StockHistoricalDataClient(key, secret).get_stock_bars(req).data.get(symbol, [])
+    return [b.close for b in bars if b.timestamp.astimezone(ET).date() < now.date()]

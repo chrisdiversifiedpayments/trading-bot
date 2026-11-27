@@ -53,8 +53,14 @@ def _flatten_time(s: Settings) -> time:
     return (datetime.combine(date.min, time(16, 0)) - timedelta(minutes=s.flatten_minutes_before_close)).time()
 
 
-def run(s: Settings, bars_by_symbol: dict[str, list[Bar]], start_equity: float = 10_000.0) -> dict:
-    """bars_by_symbol: regular-session 1-minute bars per symbol (US/Eastern), any number of days."""
+def run(s: Settings, bars_by_symbol: dict[str, list[Bar]], start_equity: float = 10_000.0,
+        skip_days: Optional[set] = None, skip_symbol_days: Optional[set] = None) -> dict:
+    """bars_by_symbol: regular-session 1-minute bars per symbol (US/Eastern), any number of days.
+
+    skip_days: dates with no new trades (calendar / market-mood filters).
+    skip_symbol_days: (symbol, date) pairs to skip (e.g. earnings days)."""
+    skip_days = skip_days or set()
+    skip_symbol_days = skip_symbol_days or set()
     by_day: dict[date, dict[str, list[Bar]]] = defaultdict(lambda: defaultdict(list))
     for sym, bars in bars_by_symbol.items():
         for b in sorted(bars, key=lambda b: b.t):
@@ -142,13 +148,13 @@ def run(s: Settings, bars_by_symbol: dict[str, list[Bar]], start_equity: float =
                     else:
                         close(p, t, last_px[p.symbol], "daily loss cap")
                 stopped = True
-            if stopped or t.time() >= flat_t:
+            if stopped or t.time() >= flat_t or day in skip_days:
                 continue
 
             # 3. look for new trades
             week_pnl_pct = (mark() - week_start_eq) / week_start_eq * 100
             for sym in day_bars:
-                if sym in positions or sym in traded_today or t not in index[sym]:
+                if sym in positions or sym in traded_today or t not in index[sym] or (sym, day) in skip_symbol_days:
                     continue
                 if not risk.may_open_trade(s, day_pnl_pct=day_pnl_pct, week_pnl_pct=week_pnl_pct,
                                            open_positions=len(positions), trades_today=len(traded_today)):

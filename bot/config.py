@@ -28,6 +28,8 @@ class Settings:
     news_skip_words: list = field(default_factory=list)
     market_filter: bool = False
     market_symbol: str = "SPY"
+    skip_calendar_days: bool = False
+    fear_filter_pct: float = 0
 
     @property
     def last_entry(self) -> time:

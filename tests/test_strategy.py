@@ -50,3 +50,13 @@ def test_market_filter_blocks_trades_against_the_market():
     short_bars = day_bars(RANGE[:15] + [100.3, 99.0], [1000] * 16 + [3000])
     assert check(on, short_bars, market_bias="up") is None
     assert check(on, short_bars, market_bias="down").side == "short"
+
+
+def test_fear_and_calendar_filters():
+    from bot.strategy import calendar_skip, fear_is_high
+    calm = [10.0] * 21
+    assert not fear_is_high(calm, 5)
+    assert fear_is_high([10.0] * 20 + [10.6], 5)
+    assert not fear_is_high([10.0] * 20 + [10.6], 0)
+    assert calendar_skip("2026-11-10", {"CPI": ["2026-11-10"]})
+    assert not calendar_skip("2026-11-11", {"CPI": ["2026-11-10"]})

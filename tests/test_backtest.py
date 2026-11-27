@@ -44,3 +44,10 @@ def test_one_trade_per_symbol_per_day():
     bars = _day([101.0, 103.5, 100.3, 101.0])
     r = run(S, {"AAA": bars}, 10_000)
     assert len(r["trades"]) == 1
+
+
+def test_skip_days_and_symbol_days():
+    bars = _day([101.0, 101.2, 102.0, 103.5])
+    day = bars[0].t.date()
+    assert run(S, {"AAA": bars}, 10_000, skip_days={day})["trades"] == []
+    assert run(S, {"AAA": bars}, 10_000, skip_symbol_days={("AAA", day)})["trades"] == []

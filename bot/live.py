@@ -64,7 +64,18 @@ class Trader:
                     self.state["skip"].append(sym)
             except Exception as e:  # news is a filter; a failure here should not stop trading
                 log.warning("News check failed for %s: %s", sym, e)
-        log.info("New day %s. Skipping on news: %s", today, self.state["skip"])
+        sit_out = []
+        if self.s.skip_calendar_days:
+            with open("data/calendar.json") as f:
+                if strategy.calendar_skip(str(today), json.load(f)):
+                    sit_out.append("Fed/CPI/jobs report day")
+        try:
+            if strategy.fear_is_high(data.daily_closes("VIXY"), self.s.fear_filter_pct):
+                sit_out.append("market fear is high")
+        except Exception as e:
+            log.warning("Fear check failed: %s", e)
+        self.state["sit_out"] = sit_out
+        log.info("New day %s. Skipping on news: %s. Sitting out: %s", today, self.state["skip"], sit_out)
         _save_state(self.state)
 
     # ---------- one pass ----------
@@ -104,6 +115,8 @@ class Trader:
         positions = self.tc.get_all_positions()
         held = {p.symbol for p in positions}
         exposure = sum(abs(float(p.market_value)) for p in positions)
+        if st.get("sit_out"):
+            return  # no new trades today; open positions keep their stop and target
         candidates = [x for x in s.symbols if x not in held and x not in st["traded"] and x not in st["skip"]]
         if not candidates:
             return

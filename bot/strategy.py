@@ -81,3 +81,15 @@ def market_bias(market_bars: list[Bar]) -> Optional[str]:
         return None
     vwap = sum((b.h + b.l + b.c) / 3 * b.v for b in market_bars) / vol
     return "up" if market_bars[-1].c > vwap else "down"
+
+
+def fear_is_high(daily_closes: list[float], jump_pct: float) -> bool:
+    """True if the latest close is more than jump_pct above the average of the 20 closes before it."""
+    if jump_pct <= 0 or len(daily_closes) < 21:
+        return False
+    avg = sum(daily_closes[-21:-1]) / 20
+    return daily_closes[-1] > avg * (1 + jump_pct / 100)
+
+
+def calendar_skip(day_iso: str, calendar: dict) -> bool:
+    return any(day_iso in calendar.get(k, []) for k in ("FOMC", "CPI", "JOBS"))
