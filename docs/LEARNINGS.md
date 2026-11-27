@@ -62,7 +62,16 @@ Y1: -6.3% / +0.7%. Higher risk magnifies swings, it does not add edge.
 ## Options (checked 2026-11-26)
 Alpaca supports options trading on paper via API. Option-income funds as a proxy for selling options,
 Jun 2021-Nov 2026: JEPI 7.6%/yr (worst drop 13.7%), XYLD 6.9%, QYLD 6.8% vs SPY 11.7%.
-Buying options for day trading fights time decay and wide spreads; not tested yet.
+SPY weekly options test (`research/options_test.py`, Feb 2024-Nov 2026, Alpaca daily option closes,
+fills worsened by 5% of option price, held to expiry). SPY hold = 14.9%/yr, worst drop 16.8%:
+| Strategy | Per year | Worst drop | Winning weeks |
+| --- | --- | --- | --- |
+| Sell weekly put 2% below (cash-secured; cash interest not counted) | 5.2% | 6.5% | 92% |
+| Covered call 2% above | 10.7% | 15.5% | 59% |
+| Buy ATM calls in uptrends, 5% of account/week | -17.4% | 48.3% | 37% |
+| Buy ATM puts in downtrends, 5%/week | -3.7% | 35.4% | 29% |
+Selling options = smoother, less return. Buying short-dated options lost badly (time decay + spreads).
+Not yet tested: 0DTE day-trading options (needs minute option data).
 
 ## Signals researched (not all tested yet)
 - Political headlines: Alpaca news (free, history from ~Apr 2026 only on this account). Use as a pause rule.
