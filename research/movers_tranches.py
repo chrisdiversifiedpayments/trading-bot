@@ -13,7 +13,7 @@ import sys
 from datetime import date
 
 sys.path.insert(0, os.path.dirname(__file__))
-from universes import LARGE_2021  # noqa: E402
+from universes import LARGE_2016, LARGE_2021  # noqa: E402
 
 ap = argparse.ArgumentParser()
 ap.add_argument("cost", nargs="?", type=float, default=5)
@@ -21,11 +21,13 @@ ap.add_argument("--drop-outliers", action="store_true")
 ap.add_argument("--top", type=int, default=5)
 ap.add_argument("--look", type=int, default=21)
 ap.add_argument("--hold", type=int, default=21)
+ap.add_argument("--since2016", action="store_true", help="2016 company list and SIP data back to 2016")
 a = ap.parse_args()
 COST = a.cost / 1e4
 
-W = json.load(open("data_cache/daily_wide_ohlc.json"))
-px = {s: {r[0]: r[1:] for r in W[s]} for s in LARGE_2021 if s in W}
+W = json.load(open("data_cache/daily_2016.json" if a.since2016 else "data_cache/daily_wide_ohlc.json"))
+UNI = LARGE_2016 if a.since2016 else LARGE_2021
+px = {s: {r[0]: r[1:] for r in W[s]} for s in UNI if s in W}
 if a.drop_outliers:
     bad = {s for s, x in px.items() for p, d in zip(sorted(x), sorted(x)[1:]) if abs(x[d][3] / x[p][3] - 1) > 0.25}
     px = {k: v for k, v in px.items() if k not in bad}
@@ -93,8 +95,13 @@ def spy_stats(start, end):
 
 
 print(f"top {a.top}, look {a.look}d, hold {a.hold}d, cost {a.cost} bps{' , outlier names dropped' if a.drop_outliers else ''}")
-for label, (s, e) in (("Jun 2021-Nov 2026", ("2021-06-01", "2026-11-26")), ("Jun 2021-Dec 2023", ("2021-06-01", "2023-12-31")),
-                      ("2024-Nov 2026", ("2024-01-02", "2026-11-26"))):
+PERIODS = ((("Feb 2016-Nov 2026", ("2016-02-03", "2026-11-26")), ("2016-2020", ("2016-02-03", "2020-12-31")),
+            ("2021-Nov 2026", ("2021-01-04", "2026-11-26")))
+           + tuple((str(y), (f"{y}-01-01" if y > 2016 else "2016-02-03", f"{y}-12-31")) for y in range(2016, 2027))
+           if a.since2016 else
+           (("Jun 2021-Nov 2026", ("2021-06-01", "2026-11-26")), ("Jun 2021-Dec 2023", ("2021-06-01", "2023-12-31")),
+            ("2024-Nov 2026", ("2024-01-02", "2026-11-26"))))
+for label, (s, e) in PERIODS:
     r, dd = run(s, e)
     sr, sdd = spy_stats(s, e)
     print(f"  {label:<18} strategy {r:6.1f}%/yr  worst drop {dd:5.1f}%   |  SPY {sr:5.1f}%/yr  worst drop {sdd:5.1f}%")

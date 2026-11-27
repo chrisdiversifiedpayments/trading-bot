@@ -97,6 +97,21 @@ hold 10d: 19.7%, hold 42d: 13.4%), always with bigger worst drops (33-39%). Drop
 >25% one-day move: 15.1% (5.4% in 2021-23, 25.8% in 2024-26). First strategy to beat SPY in a fair test;
 it is concentrated (5 stocks) and riskier. Only trades weekly, so it can run on a scheduled job.
 
+### 10-year check (`movers_tranches.py --since2016`, 2016 company list `LARGE_2016`, Alpaca SIP data)
+SIP daily data goes back to 2016-01-04 on the free plan. MON and EMC tickers were reused after their
+buyouts: series cut at 2018-06-06 and 2016-09-06.
+| Period | Strategy (cautious) | Worst drop | SPY | SPY worst drop |
+| --- | --- | --- | --- | --- |
+| Feb 2016-Nov 2026 | 16.1% | 31.6% | 14.7% | 33.8% |
+| 2016-2020 | 13.3% | 31.6% | 16.7% | 33.8% |
+| 2021-Nov 2026 | 15.1% | 35.8% | 13.1% | 24.5% |
+Beat SPY in 7 of 11 calendar years (lost 2016, 2017, 2019, 2021); most of the edge came from 2020 and
+2023. Neighbours over 10 years: top 3 18.3%, top 10 15.0%, look 42d 16.2%, hold 42d 16.3%.
+Verdict: a small edge (~1-4 points/yr) over a decade, not the ~9 points the 2021-26 test suggested.
+Monthly turnover means short-term capital gains tax in a taxable account, which could erase that edge;
+better suited to an IRA. Note: the same strategy on the 2016 list earned 15.1% for 2021-26 vs 20.2% on
+the 2021 list, so the stock list matters a lot.
+
 ## Signals researched (not all tested yet)
 - Political headlines: Alpaca news (free, history from ~Apr 2026 only on this account). Use as a pause rule.
 - Crowd mood: ApeWisdom / Reddit API (free, little history) -> record during paper trading.
