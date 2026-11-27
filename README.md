@@ -5,6 +5,8 @@ go-live checklist in the plan is passed and the owner approves.
 
 Plan: https://claude.ai/artifact/BtH4JptKe2Pjh4nGPkkXWn
 
+**Read [docs/LEARNINGS.md](docs/LEARNINGS.md) first**: every test result so far and what was ruled out.
+
 ## What it does
 Opening-range breakout on 20 large, heavily traded stocks and ETFs (`config.yaml`):
 buys when a stock breaks above its first-15-minute range on heavy volume, short-sells
