@@ -73,6 +73,19 @@ fills worsened by 5% of option price, held to expiry). SPY hold = 14.9%/yr, wors
 Selling options = smoother, less return. Buying short-dated options lost badly (time decay + spreads).
 Not yet tested: 0DTE day-trading options (needs minute option data).
 
+## Top movers (`research/movers_*.py`, 2021 large-company list), added 2026-11-26
+- Day-trade the 10 biggest opening movers (with or against the move), Jun 2021-Nov 2026: -7% to -26%/yr
+  cautious, -14% to +0.2% low. Gross edge ~0; 10 trades/day pay costs 10x.
+- Breakout bot on only the 10 movers (minute data): Y1 -18.2% / -12.2%, Y2 -14.2% / -7.9% (cautious / low).
+- Buy & hold the 5 biggest UP movers, rolling (`movers_hold.py`): best setting picked on Jun 2021-Dec 2023
+  was "movers over the past month, hold 1 month": 24.2%/yr first half, 35.8% second half (SPY 6.4% / 16.8%).
+  BUT very sensitive to which day of the month you rebalance: across 11 start days, first half -1.2% to
+  24.7% (median 6.9%), second half 8.8% to 41.4% (median 26.2%). Drawdowns only measured monthly
+  (understated). Second half rode the 2024-26 AI winners. Most promising lead so far; needs staggered
+  rebalancing (split money into 4 weekly tranches) and paper trading before trusting it.
+- Data caution: some IEX daily bars show huge one-day jumps (e.g. MRNA +177% on 2026-08-19) that may be
+  glitches; dropping every name with a >25% day gave 13.2% / 36.5% for the same setting.
+
 ## Signals researched (not all tested yet)
 - Political headlines: Alpaca news (free, history from ~Apr 2026 only on this account). Use as a pause rule.
 - Crowd mood: ApeWisdom / Reddit API (free, little history) -> record during paper trading.
