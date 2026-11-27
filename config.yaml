@@ -1,0 +1,11 @@
+# Risk limits from the plan (suggested defaults, pending owner review).
+mode: paper            # only "paper" is allowed until go-live is approved
+long_only: true
+use_margin: false
+risk_per_trade_pct: 0.5
+max_position_pct: 10
+max_open_positions: 3
+daily_loss_cap_pct: 2
+weekly_loss_cap_pct: 5
+max_trades_per_day: 10
+flatten_minutes_before_close: 10
