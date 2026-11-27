@@ -86,6 +86,17 @@ Not yet tested: 0DTE day-trading options (needs minute option data).
 - Data caution: some IEX daily bars show huge one-day jumps (e.g. MRNA +177% on 2026-08-19) that may be
   glitches; dropping every name with a >25% day gave 13.2% / 36.5% for the same setting.
 
+### Top-5 risers in 4 weekly batches (`research/movers_tranches.py`), daily-valued drawdowns
+| Period | Strategy cautious / low | Worst drop | SPY | SPY worst drop |
+| --- | --- | --- | --- | --- |
+| Jun 2021-Nov 2026 | 20.2% / 21.1% | 34.3% | 11.6% | 24.5% |
+| Jun 2021-Dec 2023 | 16.2% / 17.1% | 34.3% | 6.4% | 24.5% |
+| 2024-Nov 2026 | 26.7% / 27.6% | 23.0% | 16.8% | 18.7% |
+Neighbouring settings all beat SPY too (top 3: 26.6%, top 10: 13.7%, look 10d: 15.9%, look 42d: 12.7%,
+hold 10d: 19.7%, hold 42d: 13.4%), always with bigger worst drops (33-39%). Dropping every name with a
+>25% one-day move: 15.1% (5.4% in 2021-23, 25.8% in 2024-26). First strategy to beat SPY in a fair test;
+it is concentrated (5 stocks) and riskier. Only trades weekly, so it can run on a scheduled job.
+
 ## Signals researched (not all tested yet)
 - Political headlines: Alpaca news (free, history from ~Apr 2026 only on this account). Use as a pause rule.
 - Crowd mood: ApeWisdom / Reddit API (free, little history) -> record during paper trading.
