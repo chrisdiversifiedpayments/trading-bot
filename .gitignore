@@ -3,3 +3,6 @@
 __pycache__/
 .venv/
 *.log
+data_cache/
+state.json
+backtest_trades.csv

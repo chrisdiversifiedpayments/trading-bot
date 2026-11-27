@@ -1,7 +1,10 @@
-# Risk limits from the plan (suggested defaults, pending owner review).
+# Settings approved by the owner on 2026-11-26. Change numbers here, not in code.
 mode: paper            # only "paper" is allowed until go-live is approved
-long_only: true
-use_margin: false
+enabled: true          # kill switch: set to false and the bot closes everything and stops
+allow_short: true      # owner chose to allow short selling
+use_margin: false      # never borrow extra money: total positions <= account value
+
+# Risk limits (percent of account value)
 risk_per_trade_pct: 0.5
 max_position_pct: 10
 max_open_positions: 3
@@ -9,3 +12,20 @@ daily_loss_cap_pct: 2
 weekly_loss_cap_pct: 5
 max_trades_per_day: 10
 flatten_minutes_before_close: 10
+
+# Strategy: opening-range breakout
+range_minutes: 15        # opening range = first 15 minutes after 9:30 ET
+volume_mult: 1.5         # breakout bar volume must be 1.5x the day's average so far
+reward_risk: 2.0         # profit target = 2x the stop distance
+last_entry_time: "15:00" # no new trades after 3:00 PM ET
+
+# Assumed cost per fill in backtests (basis points; 5 = 0.05%)
+slippage_bps: 5
+
+# Watch list: large, heavily traded stocks and ETFs
+symbols: [SPY, QQQ, IWM, DIA, AAPL, MSFT, NVDA, AMZN, GOOGL, META,
+          TSLA, AMD, AVGO, JPM, BAC, XOM, WMT, COST, NFLX, UNH]
+
+# Headlines with these words in the last 24 hours make the bot skip a stock that day
+news_skip_words: [earnings, guidance, fda, lawsuit, merger, acquisition, acquire,
+                  bankruptcy, offering, investigation, sec charges, downgrade, upgrade]

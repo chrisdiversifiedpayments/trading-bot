@@ -1,16 +1,16 @@
 """Load settings and refuse to run anything but paper trading."""
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import time
 
 import yaml
-
-PAPER_URL = "https://paper-api.alpaca.markets"
 
 
 @dataclass(frozen=True)
 class Settings:
     mode: str
-    long_only: bool
+    enabled: bool
+    allow_short: bool
     use_margin: bool
     risk_per_trade_pct: float
     max_position_pct: float
@@ -19,6 +19,18 @@ class Settings:
     weekly_loss_cap_pct: float
     max_trades_per_day: int
     flatten_minutes_before_close: int
+    range_minutes: int
+    volume_mult: float
+    reward_risk: float
+    last_entry_time: str
+    slippage_bps: float
+    symbols: list = field(default_factory=list)
+    news_skip_words: list = field(default_factory=list)
+
+    @property
+    def last_entry(self) -> time:
+        h, m = self.last_entry_time.split(":")
+        return time(int(h), int(m))
 
 
 def load_settings(path: str = "config.yaml") -> Settings:
@@ -26,6 +38,8 @@ def load_settings(path: str = "config.yaml") -> Settings:
         s = Settings(**yaml.safe_load(f))
     if s.mode != "paper" or os.environ.get("TRADING_MODE", "paper") != "paper":
         raise SystemExit("Live trading is disabled. Only paper mode is allowed.")
+    if s.use_margin:
+        raise SystemExit("use_margin must stay false.")
     return s
 
 
