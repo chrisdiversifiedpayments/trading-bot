@@ -108,13 +108,14 @@ class Trader:
         if not candidates:
             return
         start = now.replace(hour=9, minute=30, second=0, microsecond=0)
-        bars = data.fetch_bars(candidates, start, now)
+        bars = data.fetch_bars(sorted(set(candidates) | {s.market_symbol}), start, now)
+        bias = strategy.market_bias(bars.get(s.market_symbol, []))
 
         for sym in candidates:
             if not risk.may_open_trade(s, day_pnl_pct=day_pnl, week_pnl_pct=week_pnl,
                                        open_positions=len(held), trades_today=len(st["traded"])):
                 break
-            sig = strategy.check(s, bars.get(sym, []))
+            sig = strategy.check(s, bars.get(sym, []), market_bias=bias)
             if sig is None:
                 continue
             if sig.side == "short":

@@ -26,6 +26,8 @@ class Settings:
     slippage_bps: float
     symbols: list = field(default_factory=list)
     news_skip_words: list = field(default_factory=list)
+    market_filter: bool = False
+    market_symbol: str = "SPY"
 
     @property
     def last_entry(self) -> time:

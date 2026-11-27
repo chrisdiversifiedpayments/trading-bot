@@ -10,13 +10,14 @@ max_position_pct: 10
 max_open_positions: 3
 daily_loss_cap_pct: 2
 weekly_loss_cap_pct: 5
-max_trades_per_day: 10
+max_trades_per_day: 3      # tuned 2026-11-27 (was 10)
 flatten_minutes_before_close: 10
 
 # Strategy: opening-range breakout
-range_minutes: 15        # opening range = first 15 minutes after 9:30 ET
-volume_mult: 1.5         # breakout bar volume must be 1.5x the day's average so far
-reward_risk: 2.0         # profit target = 2x the stop distance
+range_minutes: 30        # opening range = first 30 minutes after 9:30 ET (tuned, was 15)
+volume_mult: 2.5         # breakout bar volume must be 2.5x the day's average so far (tuned, was 1.5)
+reward_risk: 1.5         # profit target = 1.5x the stop distance (tuned, was 2.0)
+market_filter: true      # only buy when SPY is above its daily average price, only short when below
 last_entry_time: "15:00" # no new trades after 3:00 PM ET
 
 # Assumed cost per fill in backtests (basis points; 5 = 0.05%)

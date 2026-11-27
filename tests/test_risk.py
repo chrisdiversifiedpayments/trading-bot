@@ -1,7 +1,10 @@
+from dataclasses import replace
 from bot.config import load_settings
 from bot.risk import fits_exposure, may_open_trade, position_size
 
-S = load_settings("config.yaml")
+# Fixed settings so tests don't change when config.yaml is tuned
+S = replace(load_settings("config.yaml"), range_minutes=15, volume_mult=1.5, reward_risk=2.0,
+            market_filter=False, max_trades_per_day=10)
 
 
 def test_size_capped_by_risk():

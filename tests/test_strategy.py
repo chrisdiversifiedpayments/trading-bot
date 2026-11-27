@@ -4,7 +4,9 @@ from bot.config import load_settings
 from bot.strategy import check, news_says_skip
 from tests.helpers import day_bars
 
-S = load_settings("config.yaml")
+# Fixed settings so tests don't change when config.yaml is tuned
+S = replace(load_settings("config.yaml"), range_minutes=15, volume_mult=1.5, reward_risk=2.0,
+            market_filter=False, max_trades_per_day=10)
 RANGE = [100.0, 100.5, 99.5, 100.2] * 4  # 16 bars: range high 100.55, low 99.45, mid 100.0
 
 
@@ -38,3 +40,13 @@ def test_no_signal_inside_opening_range():
 def test_news_filter():
     assert news_says_skip(S, ["Apple beats on Earnings, shares jump"])
     assert not news_says_skip(S, ["Apple opens new store in Ohio"])
+
+
+def test_market_filter_blocks_trades_against_the_market():
+    bars = day_bars(RANGE[:15] + [100.3, 101.0], [1000] * 16 + [3000])
+    on = replace(S, market_filter=True)
+    assert check(on, bars, market_bias="down") is None
+    assert check(on, bars, market_bias="up").side == "long"
+    short_bars = day_bars(RANGE[:15] + [100.3, 99.0], [1000] * 16 + [3000])
+    assert check(on, short_bars, market_bias="up") is None
+    assert check(on, short_bars, market_bias="down").side == "short"

@@ -1,8 +1,11 @@
+from dataclasses import replace
 from bot.backtest import run
 from bot.config import load_settings
 from tests.helpers import day_bars
 
-S = load_settings("config.yaml")
+# Fixed settings so tests don't change when config.yaml is tuned
+S = replace(load_settings("config.yaml"), range_minutes=15, volume_mult=1.5, reward_risk=2.0,
+            market_filter=False, max_trades_per_day=10)
 RANGE = [100.0, 100.5, 99.5, 100.2] * 4
 DAY_BARS = 390  # a full 9:30-4:00 session
 
